@@ -28,15 +28,7 @@ powershell -Command "Invoke-WebRequest -Uri '%IMAGE_URL%' -OutFile '%IMAGE_PATH%
 echo ================================
 echo Definindo papel de parede...
 echo ================================
-powershell -Command ^
-"Add-Type @'
-using System;
-using System.Runtime.InteropServices;
-public class W {
-    [DllImport(\"user32.dll\", SetLastError=true)]
-    public static extern bool SystemParametersInfo(int uAction,int uParam,string lpvParam,int fuWinIni);
-}
-'@; [W]::SystemParametersInfo(20, 0, '%IMAGE_PATH%', 3)"
+powershell -Command "Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; public class W { [DllImport(\"user32.dll\", SetLastError=true)] public static extern bool SystemParametersInfo(int uAction,int uParam,string lpvParam,int fuWinIni); }'; [W]::SystemParametersInfo(20, 0, '%IMAGE_PATH%', 3)"
 
 echo ================================
 echo Limpando cache de papel de parede...
