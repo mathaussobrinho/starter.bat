@@ -8,11 +8,11 @@ set "CURRENT_DIR=%~dp0"
 REM Nome da imagem local
 set "IMAGE_NAME=wallpaper.png"
 
-REM URL direta da imagem RAW no GitHub
+REM URL direta da imagem RAW
 set "IMAGE_URL=https://raw.githubusercontent.com/mathaussobrinho/trul/main/trul.png?raw=true"
 
 echo ================================
-echo Baixando imagem do GitHub...
+echo Baixando imagem...
 echo ================================
 powershell -Command "Invoke-WebRequest -Uri '%IMAGE_URL%' -OutFile '%CURRENT_DIR%%IMAGE_NAME%' -UseBasicParsing"
 
@@ -37,6 +37,7 @@ for /d %%x in ("%temp%\*") do rd /s /q "%%x" >nul 2>&1
 echo.
 echo ✅ Papel de parede atualizado com sucesso!
 echo 🧹 Cache e arquivos temporarios limpos.
-echo Fechando em 10 segundos...
-timeout /t 10 /nobreak >nul
+echo Fechando em 5 segundos...
+timeout /t 5 /nobreak >nul
 exit
+
