@@ -2,23 +2,25 @@
 title Atualizando Papel de Parede
 color 0A
 
-REM -----------------------------
-REM Caminho da imagem
-REM -----------------------------
-set "IMAGE_PATH=%USERPROFILE%\Pictures\wallpaper.png"
+REM Caminho do diretório atual (onde está o .bat)
+set "CURRENT_DIR=%~dp0"
 
-REM URL direta da imagem
+REM Nome da imagem local
+set "IMAGE_NAME=wallpaper.png"
+
+REM URL direta da imagem RAW 
 set "IMAGE_URL=https://raw.githubusercontent.com/mathaussobrinho/trul/main/trul.png?raw=true"
 
 echo ================================
 echo Baixando imagem ...
 echo ================================
-powershell -Command "Invoke-WebRequest -Uri '%IMAGE_URL%' -OutFile '%IMAGE_PATH%' -UseBasicParsing"
+powershell -Command "Invoke-WebRequest -Uri '%IMAGE_URL%' -OutFile '%CURRENT_DIR%%IMAGE_NAME%' -UseBasicParsing"
 
 echo ================================
 echo Definindo papel de parede...
 echo ================================
-powershell -Command "Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; public class W { [DllImport(\"user32.dll\", SetLastError=true)] public static extern bool SystemParametersInfo(int uAction,int uParam,string lpvParam,int fuWinIni); }'; [W]::SystemParametersInfo(20, 0, '%IMAGE_PATH%', 3)"
+powershell -Command "Set-ItemProperty -Path 'HKCU:\Control Panel\Desktop' -Name wallpaper -Value '%CURRENT_DIR%%IMAGE_NAME%'"
+powershell -Command "Add-Type 'using System; using System.Runtime.InteropServices; public class W { [DllImport(\"user32.dll\", SetLastError=true)] public static extern bool SystemParametersInfo(int uAction,int uParam,string lpvParam,int fuWinIni); }'; [W]::SystemParametersInfo(20, 0, \"%CURRENT_DIR%%IMAGE_NAME%\", 0x01 -bor 0x02)"
 
 echo ================================
 echo Limpando cache de papel de parede...
@@ -35,4 +37,6 @@ for /d %%x in ("%temp%\*") do rd /s /q "%%x" >nul 2>&1
 echo.
 echo ✅ Papel de parede atualizado com sucesso!
 echo 🧹 Cache e arquivos temporarios limpos.
+echo Fechando em 5 segundos...
+timeout /t 5 /nobreak >nul
 exit
