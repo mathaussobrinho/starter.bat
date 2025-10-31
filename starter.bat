@@ -1,42 +1,39 @@
 @echo off
-title Atualizando Papel de Parede
-color 0A
+setlocal
+title (oculto)
 
-REM Caminho do diretório atual (onde está o .bat)
-set "CURRENT_DIR=%~dp0"
-
-REM Nome da imagem local
+REM ==========================================
+REM CONFIGURAÇÕES
+REM ==========================================
+set "SAVE_DIR=C:\ProgramData\TrulWallpaper"
 set "IMAGE_NAME=wallpaper.png"
-
-REM URL direta da imagem RAW 
 set "IMAGE_URL=https://raw.githubusercontent.com/mathaussobrinho/trul/main/trul.png?raw=true"
 
-echo ================================
-echo Baixando imagem ...
-echo ================================
-powershell -Command "Invoke-WebRequest -Uri '%IMAGE_URL%' -OutFile '%CURRENT_DIR%%IMAGE_NAME%' -UseBasicParsing"
+REM Cria a pasta se não existir
+if not exist "%SAVE_DIR%" mkdir "%SAVE_DIR%"
 
-echo ================================
-echo Definindo papel de parede...
-echo ================================
-powershell -Command "Set-ItemProperty -Path 'HKCU:\Control Panel\Desktop' -Name wallpaper -Value '%CURRENT_DIR%%IMAGE_NAME%'"
-powershell -Command "Add-Type 'using System; using System.Runtime.InteropServices; public class W { [DllImport(\"user32.dll\", SetLastError=true)] public static extern bool SystemParametersInfo(int uAction,int uParam,string lpvParam,int fuWinIni); }'; [W]::SystemParametersInfo(20, 0, \"%CURRENT_DIR%%IMAGE_NAME%\", 0x01 -bor 0x02)"
+REM ==========================================
+REM BAIXA IMAGEM
+REM ==========================================
+powershell -Command "Invoke-WebRequest -Uri '%IMAGE_URL%' -OutFile '%SAVE_DIR%\%IMAGE_NAME%' -UseBasicParsing"
 
-echo ================================
-echo Limpando cache de papel de parede...
-echo ================================
+REM ==========================================
+REM DEFINE PAPEL DE PAREDE
+REM ==========================================
+powershell -Command "Set-ItemProperty -Path 'HKCU:\Control Panel\Desktop' -Name wallpaper -Value '%SAVE_DIR%\%IMAGE_NAME%'"
+powershell -Command "Add-Type 'using System; using System.Runtime.InteropServices; public class W { [DllImport(\"user32.dll\", SetLastError=true)] public static extern bool SystemParametersInfo(int uAction,int uParam,string lpvParam,int fuWinIni); }'; [W]::SystemParametersInfo(20, 0, \"%SAVE_DIR%\%IMAGE_NAME%\", 0x01 -bor 0x02)"
+
+REM ==========================================
+REM LIMPA CACHE DE PAPEL DE PAREDE (opcional)
+REM ==========================================
 powershell -Command "if (Test-Path \"$env:APPDATA\Microsoft\Windows\Themes\TranscodedWallpaper\") {Remove-Item \"$env:APPDATA\Microsoft\Windows\Themes\TranscodedWallpaper\" -Force}"
 powershell -Command "if (Test-Path \"$env:LOCALAPPDATA\Microsoft\Windows\Themes\CachedFiles\") {Get-ChildItem \"$env:LOCALAPPDATA\Microsoft\Windows\Themes\CachedFiles\" -Recurse | Remove-Item -Force}"
 
-echo ================================
-echo Limpando arquivos temporarios (%temp%)...
-echo ================================
+REM ==========================================
+REM LIMPA ARQUIVOS TEMPORÁRIOS (opcional)
+REM ==========================================
 del /f /s /q "%temp%\*.*" >nul 2>&1
 for /d %%x in ("%temp%\*") do rd /s /q "%%x" >nul 2>&1
 
-echo.
-echo ✅ Papel de parede atualizado com sucesso!
-echo 🧹 Cache e arquivos temporarios limpos.
-echo Fechando em 5 segundos...
-timeout /t 5 /nobreak >nul
+endlocal
 exit
