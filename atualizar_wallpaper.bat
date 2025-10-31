@@ -8,12 +8,12 @@ set "CURRENT_DIR=%~dp0"
 REM Nome da imagem local
 set "IMAGE_NAME=wallpaper.png"
 
-REM URL da imagem - será substituída pelo starter.bat com a URL correta do repositório
-REM Por padrão, tenta usar a variável REPO_URL passada pelo starter.bat
+REM URL da imagem - usa a variável REPO_URL passada pelo starter.bat via VBS
+REM Se não tiver variável, usa fallback (será substituído pelo starter.bat se baixado)
 if defined REPO_URL (
     set "IMAGE_URL=%REPO_URL%/trul.png"
 ) else (
-    REM Se não tiver variável, usa fallback (será sobrescrito pelo starter.bat)
+    REM Fallback padrão (será sobrescrito pelo starter.bat quando baixado)
     set "IMAGE_URL=https://raw.githubusercontent.com/mathaussobrinho/starter.bat/main/trul.png"
 )
 
