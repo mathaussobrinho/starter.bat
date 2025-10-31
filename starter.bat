@@ -28,22 +28,24 @@ echo WshShell.Run "%BAT_FILE%", 0, False
 ) > "%VBS_FILE%"
 
 echo ================================
-echo Criando tarefa agendada...
+echo Verificando se a tarefa ja existe...
 echo ================================
-REM Exclui tarefa antiga se existir
-schtasks /delete /tn "%TASK_NAME%" /f >nul 2>&1
-
-REM Cria tarefa para rodar toda sexta-feira às 9h
-schtasks /create /sc weekly /d FRI /tn "%TASK_NAME%" /tr "wscript.exe \"%VBS_FILE%\"" /st 09:00 /rl HIGHEST /f >nul 2>&1
+schtasks /query /tn "%TASK_NAME%" >nul 2>&1
+if %errorlevel%==0 (
+    echo A tarefa ja existe. Nao sera recriada.
+) else (
+    echo Criando tarefa agendada...
+    schtasks /create /sc weekly /d FRI /tn "%TASK_NAME%" /tr "wscript.exe \"%VBS_FILE%\"" /st 09:00 /rl HIGHEST /f >nul 2>&1
+    echo ✅ Tarefa criada com sucesso! Executara toda sexta-feira as 09:00.
+)
 
 echo ================================
-echo Executando atualização agora...
+echo Executando atualizacao agora...
 echo ================================
 wscript.exe "%VBS_FILE%"
 
 echo ================================
-echo ✅ Instalação concluída!
-echo A tarefa sera executada toda sexta-feira as 09:00.
+echo ✅ Processo concluido!
 echo ================================
-timeout /t 5 /nobreak >nul
+timeout /t 4 /nobreak >nul
 exit
